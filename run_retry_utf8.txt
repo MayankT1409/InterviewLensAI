@@ -1,0 +1,26 @@
+﻿Launching lib\main.dart on 2201116SI in debug mode...
+Running Gradle task 'assembleDebug'...                              8.0s
+ΓêÜ Built build\app\outputs\flutter-apk\app-debug.apk
+Installing build\app\outputs\flutter-apk\app-debug.apk...           6.4s
+E/AndroidRuntime(31180): FATAL EXCEPTION: main
+E/AndroidRuntime(31180): Process: com.interview.lensa1409, PID: 31180
+E/AndroidRuntime(31180): java.lang.NoClassDefFoundError: Failed resolution of: Lcom/google/android/gms/common/internal/Preconditions;
+E/AndroidRuntime(31180): 	at com.google.firebase.provider.FirebaseInitProvider.checkContentProviderAuthority(FirebaseInitProvider.java:85)
+E/AndroidRuntime(31180): 	at com.google.firebase.provider.FirebaseInitProvider.attachInfo(FirebaseInitProvider.java:60)
+E/AndroidRuntime(31180): 	at android.app.ActivityThread.installProvider(ActivityThread.java:8074)
+E/AndroidRuntime(31180): 	at android.app.ActivityThread.installContentProviders(ActivityThread.java:7585)
+E/AndroidRuntime(31180): 	at android.app.ActivityThread.handleBindApplication(ActivityThread.java:7313)
+E/AndroidRuntime(31180): 	at android.app.ActivityThread.-$$Nest$mhandleBindApplication(Unknown Source:0)
+E/AndroidRuntime(31180): 	at android.app.ActivityThread$H.handleMessage(ActivityThread.java:2252)
+E/AndroidRuntime(31180): 	at android.os.Handler.dispatchMessage(Handler.java:106)
+E/AndroidRuntime(31180): 	at android.os.Looper.loopOnce(Looper.java:211)
+E/AndroidRuntime(31180): 	at android.os.Looper.loop(Looper.java:300)
+E/AndroidRuntime(31180): 	at android.app.ActivityThread.main(ActivityThread.java:8503)
+E/AndroidRuntime(31180): 	at java.lang.reflect.Method.invoke(Native Method)
+E/AndroidRuntime(31180): 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:561)
+E/AndroidRuntime(31180): 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:954)
+E/AndroidRuntime(31180): Caused by: java.lang.ClassNotFoundException: Didn't find class "com.google.android.gms.common.internal.Preconditions" on path: DexPathList[[zip file "/data/app/~~OznIWFCZ2F8NHS11DISqtA==/com.interview.lensa1409-6bcxhNjCPQdQzcpTyIADPA==/base.apk"],nativeLibraryDirectories=[/data/app/~~OznIWFCZ2F8NHS11DISqtA==/com.interview.lensa1409-6bcxhNjCPQdQzcpTyIADPA==/lib/arm64, /data/app/~~OznIWFCZ2F8NHS11DISqtA==/com.interview.lensa1409-6bcxhNjCPQdQzcpTyIADPA==/base.apk!/lib/arm64-v8a, /system/lib64, /system_ext/lib64]]
+E/AndroidRuntime(31180): 	at dalvik.system.BaseDexClassLoader.findClass(BaseDexClassLoader.java:259)
+E/AndroidRuntime(31180): 	at java.lang.ClassLoader.loadClass(ClassLoader.java:642)
+E/AndroidRuntime(31180): 	at java.lang.ClassLoader.loadClass(ClassLoader.java:578)
+E/AndroidRuntime(31180): 	... 14 more

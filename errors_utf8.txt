@@ -1,0 +1,21 @@
+﻿Analyzing MAD...                                                
+
+warning - Unused import: 'package:cloud_firestore/cloud_firestore.dart' - lib\models\interview_model.dart:1:8 - unused_import
+   info - Parameter 'key' could be a super parameter - lib\screens\analytics_screen.dart:5:9 - use_super_parameters
+   info - Parameter 'key' could be a super parameter - lib\screens\create_interview_screen.dart:10:9 - use_super_parameters
+  error - The named parameter 'maxLines' isn't defined - lib\screens\create_interview_screen.dart:90:17 - undefined_named_parameter
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\screens\create_interview_screen.dart:96:17 - deprecated_member_use
+   info - Parameter 'key' could be a super parameter - lib\screens\history_screen.dart:5:9 - use_super_parameters
+   info - Parameter 'key' could be a super parameter - lib\screens\interview_instructions_screen.dart:6:9 - use_super_parameters
+   info - Parameter 'key' could be a super parameter - lib\screens\login_screen.dart:7:9 - use_super_parameters
+   info - Parameter 'key' could be a super parameter - lib\screens\notifications_screen.dart:4:9 - use_super_parameters
+   info - Parameter 'key' could be a super parameter - lib\screens\profile_screen.dart:5:9 - use_super_parameters
+   info - Parameter 'key' could be a super parameter - lib\screens\register_screen.dart:7:9 - use_super_parameters
+   info - Parameter 'key' could be a super parameter - lib\screens\role_selection_screen.dart:5:9 - use_super_parameters
+   info - Parameter 'key' could be a super parameter - lib\screens\settings_screen.dart:5:9 - use_super_parameters
+   info - Parameter 'key' could be a super parameter - lib\screens\splash_screen.dart:4:9 - use_super_parameters
+   info - Missing type annotation - lib\screens\splash_screen.dart:17:3 - strict_top_level_inference
+   info - Don't invoke 'print' in production code - lib\services\firestore_service.dart:24:7 - avoid_print
+   info - Parameter 'key' could be a super parameter - lib\widgets\custom_card.dart:9:9 - use_super_parameters
+   info - Parameter 'key' could be a super parameter - lib\widgets\custom_textfield.dart:14:9 - use_super_parameters
+

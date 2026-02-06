@@ -1,0 +1,3 @@
+﻿Launching lib\main.dart on 2201116SI in debug mode...
+Running Gradle task 'assembleDebug'...                             12.8s
+ΓêÜ Built build\app\outputs\flutter-apk\app-debug.apk
