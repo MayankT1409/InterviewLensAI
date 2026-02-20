@@ -9,6 +9,7 @@ class InterviewRequestModel {
   final String? interviewerName;
   final DateTime createdAt;
   final DateTime? scheduledAt;
+  final String? message;
 
   InterviewRequestModel({
     required this.id,
@@ -19,6 +20,7 @@ class InterviewRequestModel {
     this.interviewerId,
     this.interviewerName,
     this.scheduledAt,
+    this.message,
   });
 
   Map<String, dynamic> toMap() {
@@ -31,6 +33,7 @@ class InterviewRequestModel {
       'interviewerId': interviewerId,
       'interviewerName': interviewerName,
       'scheduledAt': scheduledAt != null ? Timestamp.fromDate(scheduledAt!) : null,
+      'message': message,
     };
   }
 
@@ -44,6 +47,7 @@ class InterviewRequestModel {
       interviewerId: map['interviewerId'],
       interviewerName: map['interviewerName'],
       scheduledAt: map['scheduledAt'] != null ? (map['scheduledAt'] as Timestamp).toDate() : null,
+      message: map['message'],
     );
   }
 }

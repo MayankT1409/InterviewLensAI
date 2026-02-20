@@ -79,17 +79,17 @@ class FeedbackScreen extends StatelessWidget {
              // Metrics Grid
              Row(
                children: [
-                 _buildMetricCard(context, 'Confidence', metrics['confidence'], Colors.purple),
+                 _buildMetricCard(context, 'Confidence', metrics['confidence']?.toString() ?? 'N/A', Colors.purple),
                  const SizedBox(width: 16),
-                 _buildMetricCard(context, 'Pacing', metrics['pacing'], Colors.blue),
+                 _buildMetricCard(context, 'Pacing', metrics['pacing']?.toString() ?? 'N/A', Colors.blue),
                ],
              ),
              const SizedBox(height: 16),
              Row(
                children: [
-                 _buildMetricCard(context, 'Clarity', metrics['clarity'], Colors.orange),
+                 _buildMetricCard(context, 'Clarity', metrics['clarity']?.toString() ?? 'N/A', Colors.orange),
                  const SizedBox(width: 16),
-                  _buildMetricCard(context, 'Eye Contact', metrics['eyeContact'], Colors.red),
+                  _buildMetricCard(context, 'Eye Contact', metrics['eyeContact']?.toString() ?? 'N/A', Colors.red),
                ],
              ),
 

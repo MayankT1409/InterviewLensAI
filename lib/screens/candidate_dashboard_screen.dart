@@ -20,6 +20,41 @@ class _CandidateDashboardScreenState extends State<CandidateDashboardScreen> {
   bool _isRequesting = false;
 
   void _requestInterview() async {
+    final messageController = TextEditingController();
+    final shouldSend = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Request Interview'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('Add a note for the interviewer (optional):'),
+            const SizedBox(height: 8),
+            TextField(
+              controller: messageController,
+              decoration: const InputDecoration(
+                hintText: 'e.g., Looking for Flutter Senior role',
+                border: OutlineInputBorder(),
+              ),
+              maxLines: 2,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Send Request'),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldSend != true) return;
+
     setState(() => _isRequesting = true);
     try {
       final user = _authService.currentUser;
@@ -41,6 +76,7 @@ class _CandidateDashboardScreenState extends State<CandidateDashboardScreen> {
         candidateName: candidateName,
         status: 'pending',
         createdAt: DateTime.now(),
+        message: messageController.text.trim(),
       );
 
       await _firestoreService.createInterviewRequest(request);
@@ -239,6 +275,19 @@ class _CandidateDashboardScreenState extends State<CandidateDashboardScreen> {
                                               fontWeight: FontWeight.w600,
                                             ),
                                       ),
+                                      if (req.message != null && req.message!.isNotEmpty)
+                                        Padding(
+                                          padding: const EdgeInsets.only(top: 4.0),
+                                          child: Text(
+                                            'Note: ${req.message}',
+                                            style: TextStyle(
+                                              color: Colors.grey[700],
+                                              fontStyle: FontStyle.italic,
+                                            ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
                                       Text(
                                         req.createdAt.toString().split('.')[0], 
                                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(

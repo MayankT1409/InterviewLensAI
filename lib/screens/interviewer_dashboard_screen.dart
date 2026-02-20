@@ -169,6 +169,19 @@ class _InterviewerDashboardScreenState extends State<InterviewerDashboardScreen>
                                                   fontWeight: FontWeight.w600,
                                                 ),
                                           ),
+                                          if (req.message != null && req.message!.isNotEmpty)
+                                            Padding(
+                                              padding: const EdgeInsets.only(top: 2.0),
+                                              child: Text(
+                                                req.message!,
+                                                style: TextStyle(
+                                                  color: Colors.grey[800],
+                                                  fontStyle: FontStyle.italic,
+                                                ),
+                                                maxLines: 2,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
                                           Text(
                                             'Requested: ${req.createdAt.toString().split(' ')[0]}',
                                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -227,7 +240,110 @@ class _InterviewerDashboardScreenState extends State<InterviewerDashboardScreen>
                       ),
                 ),
                  const SizedBox(height: 16),
-                 const Text('Accepted sessions will appear here.', style: TextStyle(color: Colors.grey)),
+                StreamBuilder<List<InterviewRequestModel>>(
+                  stream: _authService.currentUser != null
+                      ? _firestoreService.getAcceptedRequests(_authService.currentUser!.uid)
+                      : const Stream.empty(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    final requests = snapshot.data!;
+                    if (requests.isEmpty) {
+                      return const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 20),
+                        child:  Center(child: Text('No upcoming sessions.', style: TextStyle(color: Colors.grey))),
+                      );
+                    }
+                    
+                    return ListView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: requests.length,
+                      itemBuilder: (context, index) {
+                        final req = requests[index];
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: CustomCard(
+                            onTap: () {
+                              // Navigate to interview session
+                              Navigator.pushNamed(
+                                context, 
+                                '/interview-session', 
+                                arguments: {'requestId': req.id, 'candidateName': req.candidateName}
+                              );
+                            },
+                            child: ListTile(
+                              leading: CircleAvatar(
+                                backgroundColor: Colors.blue.withValues(alpha:0.1),
+                                child: Text(req.candidateName.isNotEmpty ? req.candidateName[0] : '?',
+                                    style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold)),
+                              ),
+                              title: Text(req.candidateName, style: const TextStyle(fontWeight: FontWeight.bold)),
+                              subtitle: Text('Scheduled: ${req.scheduledAt != null ? req.scheduledAt.toString().split(' ')[0] : 'TBD'}'),
+                              trailing: const Icon(Icons.video_call, color: Colors.green),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  }
+                ),
+
+                const SizedBox(height: 32),
+                
+                // --- Completed Sessions ---
+                 Text(
+                  'Completed Sessions',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+                 const SizedBox(height: 16),
+                StreamBuilder<List<InterviewRequestModel>>(
+                  stream: _authService.currentUser != null
+                      ? _firestoreService.getCompletedRequests(_authService.currentUser!.uid)
+                      : const Stream.empty(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    final requests = snapshot.data!;
+                    if (requests.isEmpty) {
+                      return const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 20),
+                        child:  Center(child: Text('No completed sessions.', style: TextStyle(color: Colors.grey))),
+                      );
+                    }
+                    
+                    return ListView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: requests.length,
+                      itemBuilder: (context, index) {
+                        final req = requests[index];
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: CustomCard(
+                            child: ListTile(
+                              leading: CircleAvatar(
+                                backgroundColor: Colors.green.withValues(alpha:0.1),
+                                child: const Icon(Icons.check, color: Colors.green),
+                              ),
+                              title: Text(req.candidateName, style: const TextStyle(fontWeight: FontWeight.bold)),
+                              subtitle: Text('Completed on: ${req.createdAt.toString().split(' ')[0]}'), // Ideally add completedAt field
+                              trailing: const Icon(Icons.history, color: Colors.grey),
+                              onTap: () {
+                                // Maybe show feedback summary if available? 
+                                // For now just show details
+                              },
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  }
+                ),
               ],
             ),
           ),

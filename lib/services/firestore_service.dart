@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'dart:io';
 import '../models/user_model.dart';
 import '../models/interview_model.dart';
 import '../models/interview_request_model.dart';
@@ -41,6 +43,16 @@ class FirestoreService {
         .where('interviewerId', isEqualTo: interviewerId)
         .where('status', isEqualTo: 'accepted')
         // .orderBy('createdAt', descending: true) // Removed: Index issue
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((doc) => InterviewRequestModel.fromMap(doc.data(), doc.id))
+            .toList());
+  }
+
+  Stream<List<InterviewRequestModel>> getCompletedRequests(String interviewerId) {
+    return _db.collection('interview_requests')
+        .where('interviewerId', isEqualTo: interviewerId)
+        .where('status', isEqualTo: 'completed')
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((doc) => InterviewRequestModel.fromMap(doc.data(), doc.id))
@@ -99,5 +111,30 @@ class FirestoreService {
       print('Error getting user: $e');
       return null;
     }
+  }
+  
+  Future<void> updateUser(UserModel user) async {
+    String collection = 'users';
+    if (user.role == 'candidate') collection = 'candidates';
+    if (user.role == 'interviewer') collection = 'interviewers';
+    
+    await _db.collection(collection).doc(user.uid).update(user.toMap());
+  }
+
+  Future<String> uploadProfileImage(File image, String userId) async {
+     try {
+       // Create a reference to the location you want to upload to in firebase
+       final storageRef = FirebaseStorage.instance.ref().child('user_profiles/$userId.jpg');
+
+       // Upload the file to the path "user_profiles/$userId.jpg"
+       await storageRef.putFile(image);
+
+       // Get the download URL
+       final downloadUrl = await storageRef.getDownloadURL();
+       return downloadUrl;
+     } catch (e) {
+       print('Error uploading image: $e');
+       rethrow;
+     }
   }
 }

@@ -4,6 +4,10 @@ class UserModel {
   final String? name;
   final String role; // 'candidate' or 'interviewer'
   final DateTime createdAt;
+  final String? photoUrl;
+  final String? bio;
+  final String? phoneNumber;
+  final List<String>? skills;
 
   UserModel({
     required this.uid,
@@ -11,6 +15,10 @@ class UserModel {
     this.name,
     required this.role,
     required this.createdAt,
+    this.photoUrl,
+    this.bio,
+    this.phoneNumber,
+    this.skills,
   });
 
   Map<String, dynamic> toMap() {
@@ -20,6 +28,10 @@ class UserModel {
       'name': name,
       'role': role,
       'createdAt': createdAt.toIso8601String(),
+      'photoUrl': photoUrl,
+      'bio': bio,
+      'phoneNumber': phoneNumber,
+      'skills': skills,
     };
   }
 
@@ -30,6 +42,10 @@ class UserModel {
       name: map['name'],
       role: map['role'] ?? 'candidate',
       createdAt: DateTime.parse(map['createdAt']),
+      photoUrl: map['photoUrl'],
+      bio: map['bio'],
+      phoneNumber: map['phoneNumber'],
+      skills: map['skills'] != null ? List<String>.from(map['skills']) : null,
     );
   }
 }
