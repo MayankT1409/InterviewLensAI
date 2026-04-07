@@ -4,8 +4,11 @@ import '../services/auth_service.dart';
 import '../services/firestore_service.dart';
 import '../models/interview_request_model.dart';
 import 'package:uuid/uuid.dart';
+import 'package:uuid/uuid.dart';
 import 'history_screen.dart';
 import 'settings_screen.dart';
+import 'notes_screen.dart';
+import 'resources_screen.dart';
 
 class CandidateDashboardScreen extends StatefulWidget {
   const CandidateDashboardScreen({super.key});
@@ -247,7 +250,7 @@ class _CandidateDashboardScreenState extends State<CandidateDashboardScreen> {
                           child: CustomCard(
                             onTap: () {
                               if (req.status == 'accepted') {
-                                Navigator.pushNamed(context, '/interview-session', arguments: req);
+                                Navigator.pushNamed(context, '/interview-session', arguments: {'requestId': req.id, 'candidateName': req.candidateName});
                               }
                             },
                             child: Row(
@@ -311,6 +314,8 @@ class _CandidateDashboardScreenState extends State<CandidateDashboardScreen> {
             ),
           ),
           const HistoryScreen(),
+          const NotesScreen(),
+          const ResourcesScreen(),
           const SettingsScreen(),
         ],
       ),
@@ -322,6 +327,8 @@ class _CandidateDashboardScreenState extends State<CandidateDashboardScreen> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home_rounded), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.history_rounded), label: 'History'),
+          BottomNavigationBarItem(icon: Icon(Icons.note_alt_rounded), label: 'Notes'),
+          BottomNavigationBarItem(icon: Icon(Icons.wifi_tethering_rounded), label: 'Posts'),
           BottomNavigationBarItem(icon: Icon(Icons.settings_rounded), label: 'Settings'),
         ],
       ),

@@ -47,8 +47,9 @@ class HistoryScreen extends StatelessWidget {
             itemCount: history.length,
             itemBuilder: (context, index) {
               final item = history[index];
-              final score = item['overallScore'] ?? 0;
-              final isPass = score >= 70;
+              final score = item['score'] ?? item['overallScore'] ?? 0;
+              final numScore = num.tryParse(score.toString()) ?? 0;
+              final isPass = numScore >= 70;
               
               return Padding(
                 padding: const EdgeInsets.only(bottom: 12),

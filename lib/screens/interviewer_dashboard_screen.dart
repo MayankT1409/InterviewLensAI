@@ -4,6 +4,8 @@ import '../services/auth_service.dart';
 import '../services/firestore_service.dart';
 import '../models/interview_request_model.dart';
 import 'settings_screen.dart';
+import 'notes_screen.dart';
+import 'resources_screen.dart';
 
 class InterviewerDashboardScreen extends StatefulWidget {
   const InterviewerDashboardScreen({super.key});
@@ -334,8 +336,11 @@ class _InterviewerDashboardScreenState extends State<InterviewerDashboardScreen>
                               subtitle: Text('Completed on: ${req.createdAt.toString().split(' ')[0]}'), // Ideally add completedAt field
                               trailing: const Icon(Icons.history, color: Colors.grey),
                               onTap: () {
-                                // Maybe show feedback summary if available? 
-                                // For now just show details
+                                if (req.feedback != null) {
+                                  Navigator.pushNamed(context, '/feedback', arguments: req.feedback);
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No feedback available for this session.')));
+                                }
                               },
                             ),
                           ),
@@ -441,6 +446,8 @@ class _InterviewerDashboardScreenState extends State<InterviewerDashboardScreen>
               );
             },
           ),
+          const NotesScreen(),
+          const ResourcesScreen(),
           const SettingsScreen(),
         ],
       ),
@@ -452,6 +459,8 @@ class _InterviewerDashboardScreenState extends State<InterviewerDashboardScreen>
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.dashboard_rounded), label: 'Manage'),
           BottomNavigationBarItem(icon: Icon(Icons.people_rounded), label: 'Candidates'),
+          BottomNavigationBarItem(icon: Icon(Icons.note_alt_rounded), label: 'Notes'),
+          BottomNavigationBarItem(icon: Icon(Icons.wifi_tethering_rounded), label: 'Posts'),
           BottomNavigationBarItem(icon: Icon(Icons.settings_rounded), label: 'Settings'),
         ],
       ),

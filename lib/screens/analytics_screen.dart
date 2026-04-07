@@ -1,11 +1,27 @@
 import 'package:flutter/material.dart';
 import '../widgets/custom_card.dart';
+import '../services/firestore_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class AnalyticsScreen extends StatelessWidget {
   const AnalyticsScreen({Key? key}) : super(key: key);
 
+  double _getMetricScore(String? metric) {
+    if (metric == null) return 0.0;
+    final lower = metric.toLowerCase();
+    if (lower.contains('high') || lower.contains('good') || lower.contains('fast')) return 1.0;
+    if (lower.contains('medium')) return 0.6;
+    if (lower.contains('low') || lower.contains('poor') || lower.contains('slow')) return 0.3;
+    return 0.5;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    final firestoreService = FirestoreService();
+
+    if (userId == null) return const Center(child: Text("Please login"));
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Performance Analytics', style: Theme.of(context).textTheme.titleLarge),
@@ -13,57 +29,87 @@ class AnalyticsScreen extends StatelessWidget {
         elevation: 0,
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            // Summary Cards
-            Row(
+      body: StreamBuilder<List<Map<String, dynamic>>>(
+        stream: firestoreService.getUserHistory(userId),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          final history = snapshot.data!;
+          
+          if (history.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                   Icon(Icons.analytics_outlined, size: 64, color: Colors.grey[300]),
+                   const SizedBox(height: 16),
+                   Text("No analytics available yet.", style: TextStyle(color: Colors.grey[500])),
+                   Text("Complete an interview first.", style: TextStyle(color: Colors.grey[500])),
+                ],
+              ),
+            );
+          }
+
+          int totalSessions = history.length;
+          double totalScore = 0;
+          double totalConfidence = 0;
+          double totalPacing = 0;
+          double totalClarity = 0;
+          double totalEyeContact = 0;
+
+          for (var item in history) {
+            final scoreString = item['score'] ?? item['overallScore'] ?? 0;
+            totalScore += num.tryParse(scoreString.toString()) ?? 0;
+            
+            final metrics = item['metrics'] ?? {};
+            totalConfidence += _getMetricScore(metrics['confidence']);
+            totalPacing += _getMetricScore(metrics['pacing']);
+            totalClarity += _getMetricScore(metrics['clarity']);
+            totalEyeContact += _getMetricScore(metrics['eyeContact']);
+          }
+
+          double avgScore = totalScore / totalSessions;
+          double avgConfidence = totalConfidence / totalSessions;
+          double avgPacing = totalPacing / totalSessions;
+          double avgClarity = totalClarity / totalSessions;
+          double avgEyeContact = totalEyeContact / totalSessions;
+
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+            child: Column(
               children: [
-                _buildSummaryCard(context, 'Total Sessions', '12', Icons.videocam, Colors.blue),
-                const SizedBox(width: 16),
-                _buildSummaryCard(context, 'Avg Score', '78%', Icons.analytics, Colors.green),
+                // Summary Cards
+                Row(
+                  children: [
+                    _buildSummaryCard(context, 'Total Sessions', '$totalSessions', Icons.videocam, Colors.blue),
+                    const SizedBox(width: 16),
+                    _buildSummaryCard(context, 'Avg Score', '${avgScore.toStringAsFixed(0)}%', Icons.analytics, Colors.green),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                
+                // Skill Breakdown
+                CustomCard(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Skill Breakdown', style: Theme.of(context).textTheme.titleLarge),
+                      const SizedBox(height: 24),
+                      _buildSkillBar(context, 'Confidence', avgConfidence),
+                      _buildSkillBar(context, 'Clarity', avgClarity),
+                      _buildSkillBar(context, 'Pacing', avgPacing),
+                      _buildSkillBar(context, 'Eye Contact', avgEyeContact),
+                    ],
+                  ),
+                ),
+                
+                const SizedBox(height: 24),
               ],
             ),
-            const SizedBox(height: 24),
-            
-            // Skill Breakdown (Placeholder for Chart)
-            CustomCard(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Skill Breakdown', style: Theme.of(context).textTheme.titleLarge),
-                  const SizedBox(height: 24),
-                  _buildSkillBar(context, 'Technical', 0.8),
-                  _buildSkillBar(context, 'Communication', 0.65),
-                  _buildSkillBar(context, 'Confidence', 0.9),
-                  _buildSkillBar(context, 'Problem Solving', 0.75),
-                ],
-              ),
-            ),
-            
-            const SizedBox(height: 24),
-            
-            // Recent Trends
-             CustomCard(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Recent Trends', style: Theme.of(context).textTheme.titleLarge),
-                  const SizedBox(height: 16),
-                  Container(
-                    height: 200,
-                    alignment: Alignment.center,
-                    child: Text('Performance Graph Placeholder', style: TextStyle(color: Colors.grey)),
-                    // In a real app, use fl_chart or similar
-                  )
-                ],
-              ),
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

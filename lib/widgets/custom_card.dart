@@ -19,30 +19,40 @@ class CustomCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: color ?? Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
+             color: Colors.black.withValues(alpha: 0.05),
+             blurRadius: 24,
+             spreadRadius: 2,
+             offset: const Offset(0, 10),
           ),
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
+             color: Colors.black.withValues(alpha: 0.02),
+             blurRadius: 8,
+             offset: const Offset(0, 4),
           ),
         ],
-        border: Border.all(color: Colors.grey.shade100),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.8), width: 1.5),
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(20),
-          child: Padding(
-            padding: padding ?? const EdgeInsets.all(20.0),
-            child: child,
-          ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: Material(
+          color: Colors.transparent,
+          child: onTap != null 
+            ? InkWell(
+                onTap: onTap,
+                highlightColor: Colors.black.withValues(alpha: 0.02),
+                splashColor: Theme.of(context).primaryColor.withValues(alpha: 0.05),
+                child: Padding(
+                  padding: padding ?? const EdgeInsets.all(24.0),
+                  child: child,
+                ),
+              )
+            : Padding(
+                padding: padding ?? const EdgeInsets.all(24.0),
+                child: child,
+              ),
         ),
       ),
     );

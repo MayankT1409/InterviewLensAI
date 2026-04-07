@@ -1,0 +1,33 @@
+﻿Analyzing MAD...                                                
+
+   info - Parameter 'key' could be a super parameter - lib\screens\analytics_screen.dart:7:9 - use_super_parameters
+warning - Unused import: 'package:uuid/uuid.dart' - lib\screens\candidate_dashboard_screen.dart:6:8 - unused_import
+warning - Duplicate import - lib\screens\candidate_dashboard_screen.dart:7:8 - duplicate_import
+warning - Unused import: 'package:uuid/uuid.dart' - lib\screens\candidate_dashboard_screen.dart:7:8 - unused_import
+   info - Parameter 'key' could be a super parameter - lib\screens\create_interview_screen.dart:10:9 - use_super_parameters
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\screens\create_interview_screen.dart:96:17 - deprecated_member_use
+   info - Parameter 'key' could be a super parameter - lib\screens\edit_profile_screen.dart:12:9 - use_super_parameters
+   info - Parameter 'key' could be a super parameter - lib\screens\history_screen.dart:7:9 - use_super_parameters
+   info - Parameter 'key' could be a super parameter - lib\screens\interview_instructions_screen.dart:6:9 - use_super_parameters
+   info - Don't invoke 'print' in production code - lib\screens\interview_session_screen.dart:78:26 - avoid_print
+   info - Don't invoke 'print' in production code - lib\screens\interview_session_screen.dart:79:25 - avoid_print
+   info - Statements in an if should be enclosed in a block - lib\screens\interview_session_screen.dart:309:40 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\screens\interview_session_screen.dart:310:28 - curly_braces_in_flow_control_structures
+   info - Don't use 'BuildContext's across async gaps - lib\screens\interview_session_screen.dart:362:35 - use_build_context_synchronously
+   info - Parameter 'key' could be a super parameter - lib\screens\login_screen.dart:7:9 - use_super_parameters
+   info - Parameter 'key' could be a super parameter - lib\screens\profile_screen.dart:9:9 - use_super_parameters
+   info - Parameter 'key' could be a super parameter - lib\screens\register_screen.dart:7:9 - use_super_parameters
+   info - Parameter 'key' could be a super parameter - lib\screens\role_selection_screen.dart:5:9 - use_super_parameters
+   info - Parameter 'key' could be a super parameter - lib\screens\settings_screen.dart:9:9 - use_super_parameters
+   info - The private field _darkModeEnabled could be 'final' - lib\screens\settings_screen.dart:17:8 - prefer_final_fields
+warning - The value of the field '_darkModeEnabled' isn't used - lib\screens\settings_screen.dart:17:8 - unused_field
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\screens\settings_screen.dart:82:24 - deprecated_member_use
+   info - Parameter 'key' could be a super parameter - lib\screens\splash_screen.dart:4:9 - use_super_parameters
+   info - Missing type annotation - lib\screens\splash_screen.dart:17:3 - strict_top_level_inference
+   info - Don't invoke 'print' in production code - lib\services\firestore_service.dart:113:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\firestore_service.dart:138:8 - avoid_print
+  error - The named parameter 'settings' is required, but there's no corresponding argument - lib\services\notification_service.dart:35:37 - missing_required_argument
+  error - The named parameter 'foo' isn't defined - lib\services\notification_service.dart:36:7 - undefined_named_parameter
+   info - Parameter 'key' could be a super parameter - lib\widgets\custom_card.dart:9:9 - use_super_parameters
+   info - Parameter 'key' could be a super parameter - lib\widgets\custom_textfield.dart:15:9 - use_super_parameters
+
