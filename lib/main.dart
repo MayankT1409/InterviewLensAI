@@ -18,29 +18,67 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
 
+import 'package:provider/provider.dart';
+import 'providers/theme_provider.dart';
+import 'services/notification_service.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+
+// Required for handling FCM background messages natively.
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  debugPrint("Handling a background message: ${message.messageId}");
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const InterviewLensApp());
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+      ],
+      child: const InterviewLensApp(),
+    ),
+  );
 }
 
-class InterviewLensApp extends StatelessWidget {
+class InterviewLensApp extends StatefulWidget {
   const InterviewLensApp({super.key});
 
   @override
+  State<InterviewLensApp> createState() => _InterviewLensAppState();
+}
+
+class _InterviewLensAppState extends State<InterviewLensApp> {
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize Notification services centrally, passing global navigator
+    NotificationService().initialize(navigatorKey);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'InterviewLens',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.lightTheme, // Force light theme even in dark mode
-      themeMode: ThemeMode.light,
-      // initialRoute: '/splash', // Replaced by home with AuthWrapper
-      home: const AuthWrapper(),
-      routes: {
-        '/splash': (context) => const SplashScreen(),
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, child) {
+        return MaterialApp(
+          navigatorKey: navigatorKey,
+          title: 'InterviewLens',
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: themeProvider.themeMode,
+          // initialRoute: '/splash', // Replaced by home with AuthWrapper
+          home: const AuthWrapper(),
+          routes: {
+            '/splash': (context) => const SplashScreen(),
         '/role-selection': (context) => const RoleSelectionScreen(),
         '/login': (context) => const LoginScreen(),
         '/register': (context) => const RegisterScreen(),
@@ -54,6 +92,8 @@ class InterviewLensApp extends StatelessWidget {
         '/notifications': (context) => const NotificationsScreen(),
         '/settings': (context) => const SettingsScreen(),
         '/create-interview': (context) => const CreateInterviewScreen(),
+          },
+        );
       },
     );
   }

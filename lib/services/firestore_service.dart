@@ -4,6 +4,7 @@ import 'dart:io';
 import '../models/user_model.dart';
 import '../models/interview_model.dart';
 import '../models/interview_request_model.dart';
+import '../models/note_model.dart';
 
 class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -59,10 +60,11 @@ class FirestoreService {
             .toList());
   }
 
-  Future<void> updateRequestStatus(String requestId, String status, {String? interviewerId, String? interviewerName}) async {
+  Future<void> updateRequestStatus(String requestId, String status, {String? interviewerId, String? interviewerName, Map<String, dynamic>? feedback}) async {
     Map<String, dynamic> data = {'status': status};
     if (interviewerId != null) data['interviewerId'] = interviewerId;
     if (interviewerName != null) data['interviewerName'] = interviewerName;
+    if (feedback != null) data['feedback'] = feedback;
     
     await _db.collection('interview_requests').doc(requestId).update(data);
   }
@@ -137,4 +139,32 @@ class FirestoreService {
        rethrow;
      }
   }
+
+  // --- Notes CRUD Operations (Lab Requirement) ---
+
+  // Create
+  Future<void> createNote(NoteModel note) async {
+    await _db.collection('notes').doc(note.id).set(note.toMap());
+  }
+
+  // Read
+  Stream<List<NoteModel>> getNotes(String userId) {
+    return _db.collection('notes')
+        .where('userId', isEqualTo: userId)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((doc) => NoteModel.fromMap(doc.data(), doc.id))
+            .toList());
+  }
+
+  // Update
+  Future<void> updateNote(NoteModel note) async {
+    await _db.collection('notes').doc(note.id).update(note.toMap());
+  }
+
+  // Delete
+  Future<void> deleteNote(String noteId) async {
+    await _db.collection('notes').doc(noteId).delete();
+  }
 }
+

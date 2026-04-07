@@ -363,7 +363,7 @@ class _InterviewSessionScreenState extends State<InterviewSessionScreen> {
        if (args != null && args['requestId'] != null) {
          final requestId = args['requestId'];
          debugPrint('Marking request $requestId as completed');
-         await firestoreService.updateRequestStatus(requestId, 'completed');
+         await firestoreService.updateRequestStatus(requestId, 'completed', feedback: feedback);
        }
 
        if (mounted) {

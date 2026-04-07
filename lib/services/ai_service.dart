@@ -1,17 +1,17 @@
 import 'dart:convert';
-import 'dart:math';
+
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:flutter/foundation.dart';
 
 class AIService {
   // TODO: Replace with your actual Gemini API Key
-  static const String _apiKey = 'AIzaSyDsmJbBOAl44WcKKtePYQFJeXIKRJ11Yik'; 
+  static const String _apiKey = 'AIzaSyA-7TAup0ZlhICx_WhECoklRBnDtzhu8us';
 
   late final GenerativeModel _model;
 
   AIService() {
     _model = GenerativeModel(
-      model: 'gemini-1.5-flash',
+      model: 'gemini-2.5-flash',
       apiKey: _apiKey,
     );
   }
@@ -59,22 +59,22 @@ class AIService {
       return data;
 
     } catch (e) {
-      if (kDebugMode) {
-        print('AI Service Error: $e');
-      }
-      // Return safe fallback instead of throwing or returning null (though return type is non-nullable Future)
+      // Always log the FULL error so we can diagnose issues
+      debugPrint('🔴 AI Service Error (FULL): $e');
+      debugPrint('🔴 Error type: ${e.runtimeType}');
       return {
         'score': 0,
         'summary': 'Unable to generate feedback at this time.',
         'metrics': {
           'confidence': 'N/A', 
           'clarity': 'N/A', 
-          'relevance': 'N/A'
+          'pacing': 'N/A',
+          'eyeContact': 'N/A',
         },
         'insights': [
           'An error occurred while analyzing your response.',
-          'Please check your internet connection and try again.',
-          'Error details: ${e.toString().substring(0, min(e.toString().length, 50))}...'
+          'Error type: ${e.runtimeType}',
+          'Full error: ${e.toString()}',
         ]
       };
     }
