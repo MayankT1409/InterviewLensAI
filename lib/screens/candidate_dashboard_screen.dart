@@ -250,7 +250,11 @@ class _CandidateDashboardScreenState extends State<CandidateDashboardScreen> {
                           child: CustomCard(
                             onTap: () {
                               if (req.status == 'accepted') {
-                                Navigator.pushNamed(context, '/interview-session', arguments: {'requestId': req.id, 'candidateName': req.candidateName});
+                                Navigator.pushNamed(context, '/interview-session', arguments: {
+                                  'requestId': req.id, 
+                                  'candidateName': req.candidateName,
+                                  'candidateId': req.candidateId,
+                                });
                               }
                             },
                             child: Row(
@@ -316,7 +320,7 @@ class _CandidateDashboardScreenState extends State<CandidateDashboardScreen> {
           const HistoryScreen(),
           const NotesScreen(),
           const ResourcesScreen(),
-          const SettingsScreen(),
+          SettingsScreen(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(

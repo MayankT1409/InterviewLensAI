@@ -10,14 +10,14 @@ class FeedbackScreen extends StatelessWidget {
     final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
     
     // Default values if no args provided (fallback)
-    final score = args?['score'] ?? 85;
-    final summary = args?['summary'] ?? 'Great Job!';
+    final score = args?['score'] ?? 0;
+    final summary = args?['summary'] ?? 'Analysis Error';
     final metrics = args?['metrics'] as Map<String, dynamic>? ?? {
-      'confidence': 'High', 'pacing': 'Good', 'clarity': 'Excellent', 'eyeContact': 'Fair'
+      'confidence': 'N/A', 'pacing': 'N/A', 'clarity': 'N/A', 'eyeContact': 'N/A'
     };
     final insights = args?['insights'] as List<dynamic>? ?? [
-      'Try to reduce usage of filler words like "um" and "uh".',
-      'Excellent structure in your STAR method response.'
+      'No analysis data was received.',
+      'Please try the interview session again.'
     ];
 
     Color scoreColor = const Color(0xFF10B981); // Green

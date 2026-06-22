@@ -272,7 +272,11 @@ class _InterviewerDashboardScreenState extends State<InterviewerDashboardScreen>
                               Navigator.pushNamed(
                                 context, 
                                 '/interview-session', 
-                                arguments: {'requestId': req.id, 'candidateName': req.candidateName}
+                                arguments: {
+                                  'requestId': req.id, 
+                                  'candidateName': req.candidateName,
+                                  'candidateId': req.candidateId,
+                                }
                               );
                             },
                             child: ListTile(
@@ -448,7 +452,7 @@ class _InterviewerDashboardScreenState extends State<InterviewerDashboardScreen>
           ),
           const NotesScreen(),
           const ResourcesScreen(),
-          const SettingsScreen(),
+          SettingsScreen(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(

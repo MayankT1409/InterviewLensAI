@@ -351,19 +351,49 @@ class _InterviewSessionScreenState extends State<InterviewSessionScreen> {
        // Pass "Full Session" as topic, and transcript as answer
        final feedback = await aiService.generateFeedback("Full Session Interview", fullSessionData);
        
-       final user = FirebaseAuth.instance.currentUser;
-       final firestoreService = FirestoreService();
+        final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+        final String? requestId = args?['requestId'];
+        final String? argCandidateId = args?['candidateId']; // Some flows might pass this directly
 
-       if (user != null) {
-           await firestoreService.saveInterviewFeedback(feedback, user.uid);
-       }
+        final user = FirebaseAuth.instance.currentUser;
+        final firestoreService = FirestoreService();
+
+        // 1. Determine who "owns" this history (The Candidate)
+        // If it's a request, we should try to find the candidateId
+        String historyOwnerId = user?.uid ?? 'unknown';
+        String? interviewerId;
+        String sessionType = 'self';
+
+        if (requestId != null) {
+          sessionType = 'request';
+          interviewerId = user?.uid;
+          // In a request-based session, the person might be the interviewer.
+          // We need the candidate's ID. If not in args, we'd need to fetch the request.
+          // But usually, candidateId should be in args for the session.
+          if (argCandidateId != null) {
+            historyOwnerId = argCandidateId;
+          } else {
+             // Fallback: If we don't have candidateId in args, we might need to fetch it from Firestore
+             // but let's assume it's passed or it's a self-session for now.
+             // Looking at Dashboard, we might need to update how we navigate here.
+          }
+        }
+
+        if (user != null) {
+            await firestoreService.saveInterviewFeedback(
+              feedback, 
+              historyOwnerId, 
+              interviewerId: interviewerId,
+              type: sessionType,
+              title: args?['title'] ?? "Interview Session",
+            );
+        }
 
        // Mark request as completed if requestId is present
-       final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
        if (args != null && args['requestId'] != null) {
-         final requestId = args['requestId'];
-         debugPrint('Marking request $requestId as completed');
-         await firestoreService.updateRequestStatus(requestId, 'completed', feedback: feedback);
+         final currentRequestId = args['requestId'];
+         debugPrint('Marking request $currentRequestId as completed');
+         await firestoreService.updateRequestStatus(currentRequestId, 'completed', feedback: feedback);
        }
 
        if (mounted) {

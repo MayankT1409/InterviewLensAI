@@ -74,7 +74,7 @@ class HistoryScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Behavioral Interview', 
+                              item['title'] ?? 'Behavioral Interview', 
                               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -82,7 +82,9 @@ class HistoryScreen extends StatelessWidget {
                             const SizedBox(height: 4),
                             Text(
                               item['createdAt'] != null 
-                                  ? item['createdAt'].toString().substring(0, 10) 
+                                  ? (item['createdAt'] is int 
+                                      ? DateTime.fromMillisecondsSinceEpoch(item['createdAt']).toString().substring(0, 10)
+                                      : item['createdAt'].toString().substring(0, 10))
                                   : 'Recent',
                               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                     color: Colors.grey[600],

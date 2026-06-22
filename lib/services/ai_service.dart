@@ -11,70 +11,120 @@ class AIService {
 
   AIService() {
     _model = GenerativeModel(
-      model: 'gemini-2.5-flash',
+      model: 'models/gemini-1.5-flash',
       apiKey: _apiKey,
     );
   }
 
   Future<Map<String, dynamic>> generateFeedback(String interviewQuestion, String userAnswer) async {
     try {
-      // Note: interviewQuestion might now be "Full Session" and userAnswer contains the transcript
+      // 1. Pre-check: If the transcript is virtually empty, return a helpful hint
+      // We check if there's any substantial text after "Answer: "
+      final answers = RegExp(r'Answer:\s*(.+)').allMatches(userAnswer);
+      final totalAnswerLength = answers.fold(0, (sum, match) => sum + (match.group(1)?.trim().length ?? 0));
+      
+      if (totalAnswerLength < 10) {
+        return {
+          "score": 0,
+          "summary": "The session was too short for a full analysis. Please speak more during your responses.",
+          "metrics": {
+            "confidence": "Low",
+            "pacing": "N/A",
+            "clarity": "Low",
+            "eyeContact": "N/A"
+          },
+          "insights": [
+            "No significant audio input was captured.",
+            "Ensure you are speaking clearly into the microphone.",
+            "Try to provide longer, more detailed answers."
+          ]
+        };
+      }
+
       final prompt = '''
-        You are an expert technical interviewer.
+        You are an expert technical interviewer and career coach.
         
-        The following is a transcript of an interview session:
+        Analyze the following interview transcript:
         "$userAnswer"
 
-        Evaluate the candidate's performance across all questions. 
-        Provide a JSON response with the following fields:
-        - score: (integer 0-100, overall performance)
-        - summary: (string, brief summary of strengths and weaknesses)
-        - metrics: { "confidence": "High/Medium/Low", "pacing": "Fast/Good/Slow", "clarity": "High/Medium/Low", "eyeContact": "Good/Poor" }
-        - insights: (list of strings, 3 specific constructive tips based on specific answers)
+        Evaluate the candidate's performance. 
+        Provide a detailed assessment in JSON format with exactly these fields:
+        {
+          "score": (integer 0-100),
+          "summary": (string, concise overview),
+          "metrics": {
+            "confidence": "High/Medium/Low",
+            "pacing": "Fast/Good/Slow",
+            "clarity": "High/Medium/Low",
+            "eyeContact": "Good/Poor"
+          },
+          "insights": [
+            "insight 1",
+            "insight 2",
+            "insight 3"
+          ]
+        }
         
-        Return ONLY the JSON. No markdown formatting.
+        Return ONLY the raw JSON object. Do not include markdown code blocks (like ```json) or any other text.
       ''';
 
       final content = [Content.text(prompt)];
       final response = await _model.generateContent(content);
       
       final responseText = response.text;
-      if (responseText == null) throw Exception('No response from AI');
+      if (responseText == null || responseText.isEmpty) {
+        throw Exception('AI returned an empty response');
+      }
 
       if (kDebugMode) {
         print('AI Raw Response: $responseText');
       }
 
-      // Robust JSON cleanup
-      String jsonString = responseText.trim();
-      if (jsonString.startsWith('```json')) {
-        jsonString = jsonString.replaceAll('```json', '').replaceAll('```', '');
-      } else if (jsonString.startsWith('```')) {
-         jsonString = jsonString.replaceAll('```', '');
+      // Robust JSON extraction logic
+      String cleanedJson = responseText.trim();
+      
+      // 1. Remove markdown if present
+      if (cleanedJson.startsWith('```')) {
+        final lines = cleanedJson.split('\n');
+        if (lines.length > 2) {
+          cleanedJson = lines.sublist(1, lines.length - 1).join('\n');
+        }
       }
       
-      jsonString = jsonString.trim();
+      // 2. Find the first '{' and last '}' to handle stray text
+      final start = cleanedJson.indexOf('{');
+      final end = cleanedJson.lastIndexOf('}');
+      if (start != -1 && end != -1 && end > start) {
+        cleanedJson = cleanedJson.substring(start, end + 1);
+      }
       
-      final Map<String, dynamic> data = jsonDecode(jsonString);
-      return data;
-
+      try {
+        return jsonDecode(cleanedJson);
+      } catch (e) {
+        if (kDebugMode) {
+          print('JSON Decode Error: $e. Cleaned String: $cleanedJson');
+        }
+        // Last ditch attempt: if it's not JSON, try to wrap it if it looks like a summary
+        throw Exception('Failed to parse AI response as JSON');
+      }
     } catch (e) {
-      // Always log the FULL error so we can diagnose issues
-      debugPrint('🔴 AI Service Error (FULL): $e');
-      debugPrint('🔴 Error type: ${e.runtimeType}');
+      if (kDebugMode) {
+        print('CRITICAL: AI Service Error: $e');
+      }
+      
       return {
-        'score': 0,
-        'summary': 'Unable to generate feedback at this time.',
-        'metrics': {
-          'confidence': 'N/A', 
-          'clarity': 'N/A', 
-          'pacing': 'N/A',
-          'eyeContact': 'N/A',
+        "score": 0,
+        "summary": "AI Analysis could not be completed. Please check your internet connection and API key.",
+        "metrics": {
+          "confidence": "N/A",
+          "pacing": "N/A",
+          "clarity": "N/A",
+          "eyeContact": "N/A"
         },
-        'insights': [
-          'An error occurred while analyzing your response.',
-          'Error type: ${e.runtimeType}',
-          'Full error: ${e.toString()}',
+        "insights": [
+          "Technical Error: $e",
+          "This usually happens when the API key is restricted or the transcript is too complex.",
+          "Try a shorter session or check the developer console."
         ]
       };
     }

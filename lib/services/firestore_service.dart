@@ -78,10 +78,13 @@ class FirestoreService {
     await _db.collection(collection).doc(user.uid).set(user.toMap()).timeout(const Duration(seconds: 10));
   }
 
-  Future<void> saveInterviewFeedback(Map<String, dynamic> feedback, String userId) async {
+  Future<void> saveInterviewFeedback(Map<String, dynamic> feedback, String userId, {String? interviewerId, String type = 'self', String? title}) async {
      await _db.collection('interviews').add({
        ...feedback,
        'userId': userId,
+       'interviewerId': interviewerId,
+       'type': type,
+       'title': title ?? 'Interview Session',
        'createdAt': DateTime.now().toIso8601String(),
      });
   }
